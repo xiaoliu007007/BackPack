@@ -1,0 +1,188 @@
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_margin="8dp"
+        android:orientation="vertical">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical">
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="输入"
+                android:textColor="#000000" />
+
+            <View
+                android:layout_width="match_parent"
+                android:layout_height="1dp"
+                android:layout_marginTop="8dp"
+                android:background="#000000" />
+
+            <LinearLayout
+                android:weightSum="3"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content">
+
+                <CheckBox
+                    android:id="@+id/front_radio"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:clickable="false"
+                    android:visibility="gone"
+                    android:text="前门雷达" />
+
+                <CheckBox
+                    android:id="@+id/behind_radio"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:visibility="gone"
+                    android:clickable="false"
+                    android:layout_weight="1"
+                    android:text="后门雷达" />
+
+                <CheckBox
+                    android:id="@+id/hongwai_1"
+                    android:layout_width="0dp"
+                    android:clickable="false"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:text="红外定位1" />
+
+                <CheckBox
+                    android:id="@+id/hongwai_2"
+                    android:clickable="false"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:text="红外定位2" />
+
+                <CheckBox
+                    android:layout_width="0dp"
+                    android:clickable="false"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:text="电池欠压" />
+
+            </LinearLayout>
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:weightSum="3"
+                android:layout_height="wrap_content">
+
+                <CheckBox
+                    android:id="@+id/alarm_confirm"
+                    android:layout_width="0dp"
+                    android:clickable="false"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:text="报警确认" />
+
+                <CheckBox
+                    android:id="@+id/ac_input"
+                    android:layout_width="0dp"
+                    android:clickable="false"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:text="市电输入" />
+
+
+            </LinearLayout>
+
+        </LinearLayout>
+
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="32dp"
+            android:orientation="vertical">
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="LED输出"
+                android:textColor="#000000" />
+
+            <View
+                android:layout_width="match_parent"
+                android:layout_height="1dp"
+                android:layout_marginTop="8dp"
+                android:background="#000000" />
+        </LinearLayout>
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
+
+            <Button
+                android:id="@+id/out_normal"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:onClick="normal"
+                android:text="正常" />
+
+            <Button
+                android:id="@+id/out_bad"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginLeft="16dp"
+                android:layout_weight="1"
+                android:onClick="error"
+                android:text="故障" />
+
+            <Button
+                android:id="@+id/out_start_fmq"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginLeft="16dp"
+                android:layout_weight="1"
+                android:onClick="startFmq"
+                android:text="开启蜂鸣器" />
+
+        </LinearLayout>
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
+
+            <Button
+                android:id="@+id/out_ac"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:onClick="ac"
+                android:text="市电" />
+
+            <Button
+                android:id="@+id/out_alarm"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginLeft="16dp"
+                android:layout_weight="1"
+                android:onClick="alarm"
+                android:text="报警" />
+
+            <Button
+                android:id="@+id/out_stop_fmq"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginLeft="16dp"
+                android:layout_weight="1"
+                android:onClick="stopFmq"
+                android:text="关闭蜂鸣器" />
+
+        </LinearLayout>
+
+    </LinearLayout>
+
+</ScrollView>

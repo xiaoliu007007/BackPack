@@ -1,0 +1,153 @@
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content">
+
+    <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+        xmlns:tools="http://schemas.android.com/tools"
+        android:id="@+id/main"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:background="#FFFFFF"
+        android:orientation="vertical"
+        android:paddingLeft="8dp"
+        android:paddingRight="8dp"
+        tools:context="com.example.peng.backpack.main.MainActivity">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical">
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center_horizontal"
+                android:text="放射源搜寻系统"
+                android:textSize="@dimen/bluetooth_spp_text_size" />
+        </LinearLayout>
+
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
+
+            <Button
+                android:id="@+id/bt_bluetooth"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_margin="8dp"
+                android:layout_weight="1"
+                android:background="#2C3740"
+                android:drawablePadding="16dp"
+                android:drawableTop="@mipmap/ic_bluetooth"
+                android:paddingBottom="8dp"
+                android:paddingTop="16dp"
+                android:text="蓝牙配对"
+                android:textColor="#4588A1" />
+
+            <Button
+                android:id="@+id/bt_monitor"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_margin="8dp"
+                android:layout_weight="1"
+                android:background="#2C3740"
+                android:drawablePadding="16dp"
+                android:drawableTop="@mipmap/ic_smart_monitor"
+                android:paddingBottom="8dp"
+                android:paddingTop="16dp"
+                android:text="智能监测"
+                android:textColor="#4588A1" />
+
+            <Button
+                android:id="@+id/bt_set"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_margin="8dp"
+                android:layout_weight="1"
+                android:background="#2C3740"
+                android:drawablePadding="16dp"
+                android:drawableTop="@mipmap/ic_param"
+                android:paddingBottom="8dp"
+                android:paddingTop="16dp"
+                android:text="参数设置"
+                android:textColor="#4588A1" />
+
+            <Button
+                android:id="@+id/bt_test"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_margin="8dp"
+                android:layout_weight="1"
+                android:background="#2C3740"
+                android:drawablePadding="16dp"
+                android:drawableTop="@mipmap/ic_io"
+                android:paddingBottom="8dp"
+                android:paddingTop="16dp"
+                android:text="IO测试"
+                android:textColor="#4588A1" />
+        </LinearLayout>
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginRight="8dp"
+            android:weightSum="4">
+
+
+            <Button
+                android:id="@+id/bt_information"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_margin="8dp"
+                android:layout_weight="1"
+                android:background="#2C3740"
+                android:drawablePadding="16dp"
+                android:drawableTop="@mipmap/ic_info_upload"
+                android:paddingBottom="8dp"
+                android:paddingTop="16dp"
+                android:text="信息上传"
+                android:textColor="#4588A1" />
+
+            <Button
+                android:id="@+id/bt_data"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_margin="8dp"
+                android:layout_weight="1"
+                android:background="#2C3740"
+                android:drawablePadding="16dp"
+                android:drawableTop="@mipmap/ic_data_mng"
+                android:paddingBottom="8dp"
+                android:paddingTop="16dp"
+                android:text="数据管理"
+                android:textColor="#4588A1" />
+
+            <Button
+                android:id="@+id/bt_about"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_margin="8dp"
+                android:layout_weight="1"
+                android:background="#2C3740"
+                android:drawablePadding="16dp"
+                android:drawableTop="@mipmap/ic_about"
+                android:paddingBottom="8dp"
+                android:paddingTop="16dp"
+                android:text="关于"
+                android:textColor="#4588A1" />
+
+
+        </LinearLayout>
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:weightSum="3">
+
+        </LinearLayout>
+
+    </LinearLayout>
+
+
+</ScrollView>
