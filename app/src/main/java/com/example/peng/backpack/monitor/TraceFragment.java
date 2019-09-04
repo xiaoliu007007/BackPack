@@ -39,7 +39,6 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class TraceFragment extends Fragment {
-
     private static final String TAG = "TraceFragment";
     private MapView mMapView = null;    //地图视图
     private BaiduMap mBaiduMap = null;  //地图

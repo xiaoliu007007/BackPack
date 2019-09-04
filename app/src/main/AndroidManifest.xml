@@ -76,6 +76,7 @@
             android:name=".info_upload.InfoUploadActivity"
 
             android:screenOrientation="landscape" />
+
         <activity
             android:name=".upload.UploadActivity"
 
@@ -85,6 +86,10 @@
         <meta-data android:name="VERSION" android:value="3"/>
         <meta-data android:name="QUERY_LOG" android:value="true"/>
         <meta-data android:name="DOMAIN_PACKAGE_NAME" android:value="com.example.peng.backpack.data_mng"/>
+
+        <activity android:name=".route.BNaviGuideActivity" />
+        <activity android:name=".route.BNaviMainActivity" />
+        <activity android:name=".route.WNaviGuideActivity" />
 
     </application>
 

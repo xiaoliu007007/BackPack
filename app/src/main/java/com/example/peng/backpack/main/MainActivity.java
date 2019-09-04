@@ -27,7 +27,6 @@ import android.widget.Toast;
 import com.example.peng.backpack.IOTest.IOTestActivity;
 import com.example.peng.backpack.R;
 import com.example.peng.backpack.data_mng.DataMngActivity;
-import com.example.peng.backpack.info_upload.InfoUploadActivity;
 import com.example.peng.backpack.module.DataBaseModule;
 import com.example.peng.backpack.monitor.MonitorActivity;
 import com.example.peng.backpack.sys_setting.SysSettingActivity;

@@ -10,15 +10,14 @@ package com.example.peng.backpack.monitor;
  *describe:智能监测页面，实时采集监测数据，采用Fragment，左边绘制变色轨迹，右边进行数据呈现
  */
 
+import android.os.Bundle;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
-import android.os.Bundle;
+
 import com.example.peng.backpack.R;
 
 public class MonitorActivity extends AppCompatActivity
     implements MonitorFragment.StatusListener,TraceFragment.LocationListener{
-
-    private static final String TAG = "MonitorActivity";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
