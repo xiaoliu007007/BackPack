@@ -53,6 +53,10 @@ public class MainActivity extends Activity {
     public static double Latitude;
     public static double Longitude;
     private GoogleApiClient client;
+    public static double[][] directions={{0,0.0001},{0.00005,0.00005},{0.0001,0},{0.00005,-0.00005},{0,-0.0001},{-0.00005,-0.00005},{-0.0001,0},{-0.00005,0.00005}};
+    public static int[] right_dir={-1,0}; //正确的方向坐标和单位比率
+    public static double Start_Latitude=39.970811;
+    public static double Start_Longitude=116.362888;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
