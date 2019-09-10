@@ -57,6 +57,9 @@ public class MainActivity extends Activity {
     public static int[] right_dir={-1,0}; //正确的方向坐标和单位比率
     public static double Start_Latitude=39.970811;
     public static double Start_Longitude=116.362888;
+    public static boolean testFlag=true;//是否开启测试
+    public static int maxValue=99999;//人体承受最大辐射值
+    public static String IP= "http://10.28.221.202:8000/";//服务器IP地址以及端口
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {

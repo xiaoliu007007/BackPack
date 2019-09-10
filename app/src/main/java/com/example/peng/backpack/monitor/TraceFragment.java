@@ -37,6 +37,7 @@ import com.baidu.mapapi.model.LatLng;
 import com.baidu.mapapi.utils.DistanceUtil;
 import com.example.peng.backpack.LocationApplication;
 import com.example.peng.backpack.R;
+import com.example.peng.backpack.Test.MsgTest;
 import com.example.peng.backpack.main.MainActivity;
 import com.example.peng.backpack.monitor.trace.LocationService;
 
@@ -52,13 +53,14 @@ public class TraceFragment extends Fragment {
     private static int ColorStatus = 0; //当前所选用的颜色
     private static String[] statusName = {"禁用", "正常", "污染", "严重污染", "故障"};
     private LocationListener mCallback;
-    private int flag=0;//0代表无状态，1代表目前正在朝着指定的方向前进，2代表回到初始点
+    private int flag=0;//0代表没有找到起始点状态，1代表目前正在朝着指定的方向前进，2代表回到初始点，3代表找到了辐射最大比率方向
     private int now_dir=-1;//代表MainActivity中的方向一维坐标方向
     private boolean isColored=false;//当前地图方向line是否绘制
-    private boolean setStarted=false;//开启初始点，启动算法
     private int startValue=0;//初始点辐射值
-    private int maxValueIncr=0;//最大辐射比率
+    private double maxValueIncr=0.0;//最大辐射比率
     private int right_dir=-1;//正确方向
+    private boolean setRegion=false;//是否需要设置区域
+    private MsgTest test=new MsgTest();
 
     /**
      * @description: 传递坐标
@@ -126,18 +128,6 @@ public class TraceFragment extends Fragment {
         MapStatus.Builder builder = new MapStatus.Builder();
         builder.zoom(21);
         mBaiduMap.setMapStatus(MapStatusUpdateFactory.newMapStatus(builder.build()));
-
-        //创建测试的起点坐标
-        LatLng point = new LatLng(MainActivity.Start_Latitude,MainActivity.Start_Longitude);
-        //构建Marker图标
-        BitmapDescriptor bitmap = BitmapDescriptorFactory
-                .fromResource(R.drawable.icon_start);
-        //构建MarkerOption，用于在地图上添加Marker
-        OverlayOptions option = new MarkerOptions()
-                .position(point)
-                .icon(bitmap);
-        //在地图上添加Marker，并显示
-        mBaiduMap.addOverlay(option);
     }
 
     @Override
@@ -259,15 +249,21 @@ public class TraceFragment extends Fragment {
                     Toast.makeText(getActivity().getApplicationContext(), "无法获取有效定位依据导致定位失败，一般是由于手机的原因，处于飞行模式下一般会造成这种结果，可以试着重启手机", Toast.LENGTH_LONG).show();
                 }
                 mCallback.setLocation(latitude,longitude);
-                if(setStarted){//开启算法
-                    double distance=DistanceUtil.getDistance(new LatLng(MainActivity.Latitude,MainActivity.Longitude),new LatLng(MainActivity.Start_Latitude,MainActivity.Start_Longitude));
-                    //Toast.makeText(getActivity().getApplicationContext(), "距离:"+distance, Toast.LENGTH_LONG).show();
-                    if(now_dir!=-1||distance<4){
-                        if(flag==0){
-                            flag=1;
-                        }
+                if(!setRegion){
+                    if(flag==0){
+                        findStart();
+                    }
+                    if(flag==1||flag==2){
                         findDirection();
                     }
+                    if(flag==3){
+                        alongWithDirection();
+                    }
+                }
+                if(setRegion){
+                    double[] now={MainActivity.Latitude,MainActivity.Longitude};
+                    createRegion(now,1);
+                    setRegion=!setRegion;
                 }
             }
         }
@@ -279,6 +275,42 @@ public class TraceFragment extends Fragment {
         String date = dateFormat.format(new java.util.Date());
 
         return date;
+    }
+    /**
+     * @description: 绘制初始点
+     * @author: lyj
+     * @create: 2019/09/10
+     **/
+    public void pointStart() {
+        //创建测试的起点坐标
+        LatLng point = new LatLng(MainActivity.Start_Latitude,MainActivity.Start_Longitude);
+        //构建Marker图标
+        BitmapDescriptor bitmap = BitmapDescriptorFactory
+                .fromResource(R.drawable.icon_start);
+        //构建MarkerOption，用于在地图上添加Marker
+        OverlayOptions option = new MarkerOptions()
+                .position(point)
+                .icon(bitmap);
+        //在地图上添加Marker，并显示
+        mBaiduMap.addOverlay(option);
+    }
+
+    /**
+     * @description: 开启引路算法
+     * @author: lyj
+     * @create: 2019/09/10
+     **/
+    public void findStart() {
+        if(MainActivity.testFlag){
+            startValue=test.findData();
+            if(startValue!=0){
+                Toast.makeText(getActivity().getApplicationContext(), String.valueOf(startValue), Toast.LENGTH_LONG).show();
+                MainActivity.Start_Longitude=MainActivity.Longitude;
+                MainActivity.Start_Latitude=MainActivity.Latitude;
+                flag=1;
+                pointStart();
+            }
+        }
     }
 
     /**
@@ -306,6 +338,7 @@ public class TraceFragment extends Fragment {
             double distance1=DistanceUtil.getDistance(new LatLng(MainActivity.Latitude,MainActivity.Longitude),aim);
             Toast.makeText(getActivity().getApplicationContext(), "距离:"+distance1+"pos:"+now_dir, Toast.LENGTH_LONG).show();
             if(DistanceUtil.getDistance(new LatLng(MainActivity.Latitude,MainActivity.Longitude),aim)<5){
+                calculateDir();//计算辐射比率
                 Toast.makeText(getActivity().getApplicationContext(), "已经到达，请沿着黑色指引路线原路返回", Toast.LENGTH_LONG).show();
                 flag=2;//切换模式
             }
@@ -315,8 +348,10 @@ public class TraceFragment extends Fragment {
             Toast.makeText(getActivity().getApplicationContext(), "距离:"+distance2+"pos:"+now_dir, Toast.LENGTH_LONG).show();
             if(DistanceUtil.getDistance(new LatLng(MainActivity.Latitude,MainActivity.Longitude),start)<5){
                 mBaiduMap.clear();
+                pointStart();
                 if(now_dir==7){
                     Toast.makeText(getActivity().getApplicationContext(), "完成", Toast.LENGTH_LONG).show();
+                    flag=3;
                     now_dir=-1;
                     return;
                 }
@@ -330,8 +365,68 @@ public class TraceFragment extends Fragment {
     }
 
     /**
-     * @description: 坐标转换算法
+     * @description: 目前最大辐射比率方向计算
      * @author: lyj
-     * @create: 2019/09/09
+     * @create: 2019/09/10
      **/
+    public void calculateDir() {
+        int nextValue=test.findData();
+        double distance=DistanceUtil.getDistance(new LatLng(MainActivity.Latitude,MainActivity.Longitude),new LatLng(MainActivity.Start_Latitude,MainActivity.Start_Longitude));
+        double incr=(nextValue-startValue)/distance;
+        if(incr>maxValueIncr){
+            right_dir=now_dir;
+        }
+    }
+
+    /**
+     * @description: 引导沿着辐射比率最大方向
+     * @author: lyj
+     * @create: 2019/09/10
+     **/
+    public void alongWithDirection() {
+        mBaiduMap.clear();
+        LatLng now=new LatLng(MainActivity.Latitude,MainActivity.Longitude);
+        int nowValue=test.findData();//判断此时的辐射值是否减小或者到达最大值
+        if(nowValue>=MainActivity.maxValue){
+            setRegion=!setRegion;
+            return;
+        }
+        if(nowValue<startValue){
+            findStart();
+            flag=1;
+            return;
+        }
+        startValue=nowValue;
+        LatLng next=new LatLng(MainActivity.Latitude+MainActivity.directions[right_dir][1]*5,MainActivity.Longitude+MainActivity.directions[right_dir][0]*5);
+        List<LatLng> list = new ArrayList<>();
+        list.add(now);
+        list.add(next);
+        PolylineOptions polyline = new PolylineOptions().width(10).color(Color.BLACK).points(list);
+        Overlay track = mBaiduMap.addOverlay(polyline);
+    }
+
+    /**
+     * @description: 绘制区域
+     * @author: lyj
+     * @create: 2019/09/10
+     **/
+    public void createRegion(double[] now,int dir) {
+        for(int i=0;i<10;i++){
+            LatLng start=new LatLng(now[0]-MainActivity.directions[dir][1]*i,now[1]-MainActivity.directions[dir][0]*i);
+            int next_dir;
+            if(dir>1){
+                next_dir=dir-2;
+            }
+            else{
+                next_dir=dir+2;
+            }
+            LatLng next=new LatLng(start.latitude-MainActivity.directions[next_dir][1]*10,start.longitude-MainActivity.directions[next_dir][0]*10);
+            List<LatLng> list = new ArrayList<>();
+            list.add(start);
+            list.add(next);
+            PolylineOptions polyline = new PolylineOptions().width(10).color(Color.BLACK).points(list);
+            Overlay track = mBaiduMap.addOverlay(polyline);
+        }
+        Toast.makeText(getActivity().getApplicationContext(), "请沿着黑色路线依次采集数据", Toast.LENGTH_LONG).show();
+    }
 }

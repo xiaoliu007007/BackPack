@@ -77,7 +77,7 @@ public class UploadActivity extends AppCompatActivity {
             @Override
             public void run(){
                 HttpClient httpClient = new DefaultHttpClient();
-                String url="http://10.28.169.81:8000/getMsg/";
+                String url=MainActivity.IP+"getMsg/";
                 HttpPost httpPost = new HttpPost(url);
                 List<DataMsg> list=find();
                 ArrayList<NameValuePair> datas = new ArrayList<NameValuePair>();
