@@ -18,7 +18,5 @@ from BackPackServer import view
 
 urlpatterns = [
     url(r'^hello/$',view.hello),
-    url(r'^testdb/$',view.testdb),
-    url(r'^dbscan/$',view.dbscan),
     url(r'^getMsg/$',view.getMsg),
 ]

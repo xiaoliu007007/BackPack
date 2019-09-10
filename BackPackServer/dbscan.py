@@ -1,3 +1,8 @@
+"""
+@description: DBSCAN算法
+@author: lyj
+@create: 2019/09/03
+"""
 import numpy as np
 import matplotlib.pyplot as plt
 from sklearn import datasets
