@@ -49,8 +49,8 @@ public class MsgTest {
                     while ((s = br.readLine()) != null) {
                         String[] str=s.trim().split("\\s+");
                         if(pos>=100&&pos<=119){
-                            Integer latitude=Integer.parseInt(str[3])+39900050;
-                            Integer longitude=Integer.parseInt(str[2])+116300000;
+                            Integer latitude=Integer.parseInt(str[3])+39899940;
+                            Integer longitude=Integer.parseInt(str[2])+116299730;
                             TestMsg msg=list.get(latitude_pos++);
                             msg.setLatitude(latitude);
                             msg.setLongitude(longitude);
@@ -95,7 +95,8 @@ public class MsgTest {
      * @create: 2019/09/09
      **/
     public String find(){
-        TestMsg msg=TestMsg.findById(TestMsg.class,319);
+        TestMsg msg=TestMsg.findById(TestMsg.class,1);
+        Log.i(TAG, ":"+msg.toString());
         return msg.toString();
     }
 
@@ -105,12 +106,11 @@ public class MsgTest {
      * @create: 2019/09/10
      **/
     public int findData() {
-        int[] start={116364420,39970250};
+        int[] start={116364150,39970140};
         int[] incrBy={20,-15};
         int[] now={(int)(MainActivity.Longitude*1000000),(int)(MainActivity.Latitude*1000000)};
         int[] convertLoc=findNearerLocation(start,incrBy,now);
-        /*convertLoc[1]=39970060;
-        convertLoc[0]=116364500;*/
+        Log.i(TAG, ":"+convertLoc[0]+":"+convertLoc[1]);
         List<TestMsg> list=TestMsg.find(TestMsg.class,"latitude = ? and longitude = ?",String.valueOf(convertLoc[1]),String.valueOf(convertLoc[0]));
         if(list==null){
             return 0;
@@ -125,7 +125,7 @@ public class MsgTest {
      * @create: 2019/09/10
      **/
     public int[] findNearerLocation(int[] start,int[] incrBy,int[] now) {
-        if(now[0]<start[0]||now[1]<start[1]){
+        if(now[0]<start[0]||now[1]>start[1]){
             return now;
         }
         int[] ans= {0,0};
