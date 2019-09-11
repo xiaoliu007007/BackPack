@@ -54,12 +54,13 @@ public class TraceFragment extends Fragment {
     private static String[] statusName = {"禁用", "正常", "污染", "严重污染", "故障"};
     private LocationListener mCallback;
     private int flag=0;//0代表没有找到起始点状态，1代表目前正在朝着指定的方向前进，2代表回到初始点，3代表找到了辐射最大比率方向
-    private int now_dir=-1;//代表MainActivity中的方向一维坐标方向
+    private int now_dir=2;//代表MainActivity中的方向一维坐标方向
     private boolean isColored=false;//当前地图方向line是否绘制
     private int startValue=0;//初始点辐射值
     private double maxValueIncr=0.0;//最大辐射比率
-    private int right_dir=-1;//正确方向
+    private int right_dir=1;//正确方向
     private boolean setRegion=false;//是否需要设置区域
+    private boolean setGuide=false;//是否找到辐射值最强的方向
     private MsgTest test=new MsgTest();
 
     /**
@@ -251,19 +252,21 @@ public class TraceFragment extends Fragment {
                 mCallback.setLocation(latitude,longitude);
                 if(!setRegion){
                     if(flag==0){
+                        Log.i(TAG, "寻找起点");
                         findStart();
                     }
                     if(flag==1||flag==2){
+                        Log.i(TAG, "开始导航");
                         findDirection();
                     }
                     if(flag==3){
+                        Log.i(TAG, "沿着方向");
                         alongWithDirection();
                     }
                 }
                 if(setRegion){
                     double[] now={MainActivity.Latitude,MainActivity.Longitude};
-                    createRegion(now,1);
-                    setRegion=!setRegion;
+                    createRegion(now,right_dir);
                 }
             }
         }
@@ -282,6 +285,7 @@ public class TraceFragment extends Fragment {
      * @create: 2019/09/10
      **/
     public void pointStart() {
+        mBaiduMap.clear();
         //创建测试的起点坐标
         LatLng point = new LatLng(MainActivity.Start_Latitude,MainActivity.Start_Longitude);
         //构建Marker图标
@@ -321,41 +325,47 @@ public class TraceFragment extends Fragment {
     private void findDirection(){
         LatLng start=new LatLng(MainActivity.Start_Latitude,MainActivity.Start_Longitude);
         if(flag==1){
+            Log.i(TAG, "findDirection，flag==1");
             if(now_dir==-1){
                 now_dir++;//初始化方向操作
             }
             LatLng aim=new LatLng(MainActivity.Start_Latitude+MainActivity.directions[now_dir][1],MainActivity.Start_Longitude+MainActivity.directions[now_dir][0]);
             if(!isColored){//若没有绘制路线，则绘制路线
+                Log.i(TAG, "colored，flag==1");
                 List<LatLng> list = new ArrayList<>();
                 list.add(start);
                 list.add(aim);
                 PolylineOptions polyline = new PolylineOptions().width(10).color(Color.BLACK).points(list);
                 Overlay track = mBaiduMap.addOverlay(polyline);
                 isColored=!isColored;
-                Toast.makeText(getActivity().getApplicationContext(), "请沿着黑色指引路线到达指定地点", Toast.LENGTH_LONG).show();
+                //Toast.makeText(getActivity().getApplicationContext(), "请沿着黑色指引路线到达指定地点", Toast.LENGTH_LONG).show();
                 return;
             }
+            Toast.makeText(getActivity().getApplicationContext(), "请沿着黑色指引路线到达指定地点", Toast.LENGTH_LONG).show();
             double distance1=DistanceUtil.getDistance(new LatLng(MainActivity.Latitude,MainActivity.Longitude),aim);
-            Toast.makeText(getActivity().getApplicationContext(), "距离:"+distance1+"pos:"+now_dir, Toast.LENGTH_LONG).show();
-            if(DistanceUtil.getDistance(new LatLng(MainActivity.Latitude,MainActivity.Longitude),aim)<5){
+            //Toast.makeText(getActivity().getApplicationContext(), "下一坐标点:"+aim.longitude+":"+aim.latitude+"距离"+distance1, Toast.LENGTH_LONG).show();
+            if(distance1<3.5){
                 calculateDir();//计算辐射比率
-                Toast.makeText(getActivity().getApplicationContext(), "已经到达，请沿着黑色指引路线原路返回", Toast.LENGTH_LONG).show();
+                //Toast.makeText(getActivity().getApplicationContext(), "已经到达，请沿着黑色指引路线原路返回", Toast.LENGTH_LONG).show();
                 flag=2;//切换模式
             }
         }
         else if(flag==2){
-            double distance2=DistanceUtil.getDistance(new LatLng(MainActivity.Latitude,MainActivity.Longitude),start);
-            Toast.makeText(getActivity().getApplicationContext(), "距离:"+distance2+"pos:"+now_dir, Toast.LENGTH_LONG).show();
-            if(DistanceUtil.getDistance(new LatLng(MainActivity.Latitude,MainActivity.Longitude),start)<5){
+            Log.i(TAG, "return findDirection，flag==1");
+            Toast.makeText(getActivity().getApplicationContext(), "已经到达，请沿着黑色指引路线原路返回", Toast.LENGTH_LONG).show();
+            /*double distance2=DistanceUtil.getDistance(new LatLng(MainActivity.Latitude,MainActivity.Longitude),start);
+            Toast.makeText(getActivity().getApplicationContext(), "和起点距离:"+distance2+"pos:"+now_dir, Toast.LENGTH_LONG).show();*/
+            if(DistanceUtil.getDistance(new LatLng(MainActivity.Latitude,MainActivity.Longitude),start)<3.5){
                 mBaiduMap.clear();
                 pointStart();
-                if(now_dir==7){
+                if(now_dir==6){
                     Toast.makeText(getActivity().getApplicationContext(), "完成", Toast.LENGTH_LONG).show();
                     flag=3;
                     now_dir=-1;
+                    isColored=!isColored;
                     return;
                 }
-                now_dir++;
+                now_dir+=2;
                 isColored=!isColored;
                 flag=1;
                 return;
@@ -370,7 +380,9 @@ public class TraceFragment extends Fragment {
      * @create: 2019/09/10
      **/
     public void calculateDir() {
+        Log.i(TAG, "calculate Dirnb ，flag==1");
         int nextValue=test.findData();
+        Toast.makeText(getActivity().getApplicationContext(), "当前辐射值"+nextValue, Toast.LENGTH_LONG).show();
         double distance=DistanceUtil.getDistance(new LatLng(MainActivity.Latitude,MainActivity.Longitude),new LatLng(MainActivity.Start_Latitude,MainActivity.Start_Longitude));
         double incr=(nextValue-startValue)/distance;
         if(incr>maxValueIncr){
@@ -384,25 +396,29 @@ public class TraceFragment extends Fragment {
      * @create: 2019/09/10
      **/
     public void alongWithDirection() {
-        mBaiduMap.clear();
-        LatLng now=new LatLng(MainActivity.Latitude,MainActivity.Longitude);
+        if(!setGuide){
+            LatLng now=new LatLng(MainActivity.Latitude,MainActivity.Longitude);
+            LatLng next=new LatLng(MainActivity.Latitude+MainActivity.directions[right_dir][1]*5,MainActivity.Longitude+MainActivity.directions[right_dir][0]*5);
+            List<LatLng> list = new ArrayList<>();
+            list.add(now);
+            list.add(next);
+            PolylineOptions polyline = new PolylineOptions().width(10).color(Color.BLACK).points(list);
+            Overlay track = mBaiduMap.addOverlay(polyline);
+            setGuide=!setGuide;
+        }
         int nowValue=test.findData();//判断此时的辐射值是否减小或者到达最大值
+        Toast.makeText(getActivity().getApplicationContext(), "当前辐射值"+nowValue, Toast.LENGTH_LONG).show();
         if(nowValue>=MainActivity.maxValue){
             setRegion=!setRegion;
             return;
         }
         if(nowValue<startValue){
-            findStart();
+            setGuide=!setGuide;
             flag=1;
+            findStart();
             return;
         }
         startValue=nowValue;
-        LatLng next=new LatLng(MainActivity.Latitude+MainActivity.directions[right_dir][1]*5,MainActivity.Longitude+MainActivity.directions[right_dir][0]*5);
-        List<LatLng> list = new ArrayList<>();
-        list.add(now);
-        list.add(next);
-        PolylineOptions polyline = new PolylineOptions().width(10).color(Color.BLACK).points(list);
-        Overlay track = mBaiduMap.addOverlay(polyline);
     }
 
     /**
@@ -411,6 +427,7 @@ public class TraceFragment extends Fragment {
      * @create: 2019/09/10
      **/
     public void createRegion(double[] now,int dir) {
+        setRegion=!setRegion;
         for(int i=0;i<10;i++){
             LatLng start=new LatLng(now[0]-MainActivity.directions[dir][1]*i,now[1]-MainActivity.directions[dir][0]*i);
             int next_dir;

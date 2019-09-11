@@ -49,8 +49,8 @@ public class MsgTest {
                     while ((s = br.readLine()) != null) {
                         String[] str=s.trim().split("\\s+");
                         if(pos>=100&&pos<=119){
-                            Integer latitude=Integer.parseInt(str[3])+39899940;
-                            Integer longitude=Integer.parseInt(str[2])+116299730;
+                            Integer latitude=Integer.parseInt(str[3])+39900050;
+                            Integer longitude=Integer.parseInt(str[2])+116299930;
                             TestMsg msg=list.get(latitude_pos++);
                             msg.setLatitude(latitude);
                             msg.setLongitude(longitude);
@@ -106,7 +106,7 @@ public class MsgTest {
      * @create: 2019/09/10
      **/
     public int findData() {
-        int[] start={116364150,39970140};
+        int[] start={116364350,39970250};
         int[] incrBy={20,-15};
         int[] now={(int)(MainActivity.Longitude*1000000),(int)(MainActivity.Latitude*1000000)};
         int[] convertLoc=findNearerLocation(start,incrBy,now);
