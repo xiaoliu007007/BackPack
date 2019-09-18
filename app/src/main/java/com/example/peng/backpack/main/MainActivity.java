@@ -57,8 +57,8 @@ public class MainActivity extends Activity {
     public static double Start_Latitude=39.970811;
     public static double Start_Longitude=116.362888;
     public static boolean testFlag=true;//是否开启测试
-    public static int maxValue=35000;//人体承受最大辐射值
-    public static String IP= "http://10.28.221.202:8000/";//服务器IP地址以及端口
+    public static int maxValue=36000;//人体承受最大辐射值
+    public static String IP= "http://10.28.195.179:8000/";//服务器IP地址以及端口
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
