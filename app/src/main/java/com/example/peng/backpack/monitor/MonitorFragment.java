@@ -22,15 +22,19 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.ListView;
+import android.widget.Toast;
+
 import com.example.peng.backpack.R;
 import com.example.peng.backpack.data_mng.DataMsg;
 import com.example.peng.backpack.main.MainActivity;
+import com.example.peng.backpack.utils.DBScanUtils;
 
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Timer;
 import java.util.TimerTask;
+
 import app.akexorcist.bluetotohspp.library.BluetoothSPP;
 
 public class MonitorFragment extends Fragment {
@@ -124,6 +128,18 @@ public class MonitorFragment extends Fragment {
                 }catch (Exception e) {
                     Log.i(TAG, "onClick: " + e.toString());
                 }
+            }
+        });
+
+        /**
+         * @description: DBSCAN测试按钮
+         * @author: lyj
+         * @create: 2019/09/23
+         **/
+        status_button.setOnClickListener(new View.OnClickListener() {
+            public void onClick(View v) {
+                double[] ans= DBScanUtils.getTestMsg();
+                Toast.makeText(getActivity().getApplicationContext(), "预测坐标为"+ans[0]+":"+ans[1], Toast.LENGTH_LONG).show();
             }
         });
 
