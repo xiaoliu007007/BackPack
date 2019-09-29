@@ -28,6 +28,7 @@ import com.baidu.mapapi.map.BitmapDescriptorFactory;
 import com.baidu.mapapi.map.MapStatus;
 import com.baidu.mapapi.map.MapStatusUpdateFactory;
 import com.baidu.mapapi.map.MapView;
+import com.baidu.mapapi.map.Marker;
 import com.baidu.mapapi.map.MarkerOptions;
 import com.baidu.mapapi.map.MyLocationData;
 import com.baidu.mapapi.map.Overlay;
@@ -38,6 +39,7 @@ import com.baidu.mapapi.utils.DistanceUtil;
 import com.example.peng.backpack.LocationApplication;
 import com.example.peng.backpack.R;
 import com.example.peng.backpack.Test.MsgTest;
+import com.example.peng.backpack.data_mng.DataMsg;
 import com.example.peng.backpack.main.MainActivity;
 import com.example.peng.backpack.monitor.trace.LocationService;
 
@@ -62,6 +64,7 @@ public class TraceFragment extends Fragment {
     private boolean setRegion=false;//是否需要设置区域
     private boolean setGuide=false;//是否找到辐射值最强的方向
     private MsgTest test=new MsgTest();
+    private String measureVal="";
 
     /**
      * @description: 传递坐标
@@ -73,8 +76,9 @@ public class TraceFragment extends Fragment {
     }
 
     /** 设置与获取轨迹颜色 */
-    public void setColorStatus(int status) {
+    public void setColorStatus(int status,String val) {
         ColorStatus = status;
+        measureVal=val;
     }
     public int getColorStatus() {
         return ColorStatus;
@@ -87,6 +91,7 @@ public class TraceFragment extends Fragment {
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+
     }
 
     /**
@@ -129,6 +134,21 @@ public class TraceFragment extends Fragment {
         MapStatus.Builder builder = new MapStatus.Builder();
         builder.zoom(21);
         mBaiduMap.setMapStatus(MapStatusUpdateFactory.newMapStatus(builder.build()));
+
+        mBaiduMap.setOnMarkerClickListener(new BaiduMap.OnMarkerClickListener() {
+            //marker被点击时回调的方法
+            //若响应点击事件，返回true，否则返回false
+            //默认返回false
+            @Override
+            public boolean onMarkerClick(Marker marker) {
+                Bundle bundle = marker.getExtraInfo();
+                String msg=bundle.getString("msg");
+                Toast.makeText(getActivity().getApplicationContext(), "辐射值为"+msg, Toast.LENGTH_LONG).show();
+                return false;
+            }
+        });
+        setTestMsg();
+        initHistoryPoint();
     }
 
     @Override
@@ -250,6 +270,7 @@ public class TraceFragment extends Fragment {
                     Toast.makeText(getActivity().getApplicationContext(), "无法获取有效定位依据导致定位失败，一般是由于手机的原因，处于飞行模式下一般会造成这种结果，可以试着重启手机", Toast.LENGTH_LONG).show();
                 }
                 mCallback.setLocation(latitude,longitude);
+                setMarker();
                 if(!setRegion){
                     if(flag==0){
                         Log.i(TAG, "寻找起点");
@@ -440,5 +461,75 @@ public class TraceFragment extends Fragment {
             Overlay track = mBaiduMap.addOverlay(polyline);
         }
         Toast.makeText(getActivity().getApplicationContext(), "请沿着黑色路线依次采集数据", Toast.LENGTH_LONG).show();
+    }
+    /**
+     * @description: 历史轨迹点的测试
+     * @author: lyj
+     * @create: 2019/09/27
+     **/
+    public void setMarker(){
+        if(measureVal==null||measureVal.length()==0){
+            Log.i(TAG, "measureVal---------null");
+            return;
+        }
+        if(isRepeatPoint()){
+            Log.i(TAG, "repeated---------null");
+            return;
+        }
+        Log.i(TAG, "find-----------------------------------------------------------------------go");
+        Bundle mBundle = new Bundle();
+        mBundle.putString("msg", measureVal);
+        LatLng point = new LatLng(MainActivity.Latitude, MainActivity.Longitude);
+        BitmapDescriptor bitmap = BitmapDescriptorFactory.fromResource(R.drawable.icon_end);
+        MarkerOptions option = new MarkerOptions().position(point).icon(bitmap).draggable(true).extraInfo(mBundle).flat(true).alpha(0.5f);
+        mBaiduMap.addOverlay(option);
+        DataMsg msg=new DataMsg(getTime(),measureVal,MainActivity.Longitude,MainActivity.Latitude,1);
+        msg.save();
+    }
+    /**
+     * @description: 绘制数据库轨迹点
+     * @author: lyj
+     * @create: 2019/09/29
+     **/
+    public void initHistoryPoint(){
+        //List<DataMsg> list=DataMsg.find(DataMsg.class,"status = ? and latitude > ? and latitude <? and longitude >? and longitude <?",
+        //        "1",String.valueOf(MainActivity.Latitude-MainActivity.interval),String.valueOf(MainActivity.Latitude+MainActivity.interval),String.valueOf(MainActivity.Longitude-MainActivity.interval),String.valueOf(MainActivity.Longitude+MainActivity.interval));
+        List<DataMsg> list=DataMsg.find(DataMsg.class,"status = ?","1");
+        if(list==null||list.size()==0){
+            return;
+        }
+        for(DataMsg data:list){
+            Bundle mBundle = new Bundle();
+            mBundle.putString("msg", data.getValue());
+            LatLng point = new LatLng(data.getLatitude(), data.getLongitude());
+            BitmapDescriptor bitmap = BitmapDescriptorFactory.fromResource(R.drawable.icon_end);
+            MarkerOptions option = new MarkerOptions().position(point).icon(bitmap).draggable(true).extraInfo(mBundle).flat(true).alpha(0.5f);
+            mBaiduMap.addOverlay(option);
+        }
+    }
+
+    /**
+     * @description: 存储测试数据，后期删除
+     * @author: lyj
+     * @create: 2019/09/29
+     **/
+    public void setTestMsg(){
+        DataMsg msg=new DataMsg(getTime(),String.valueOf(1111),116.364534,39.970186,1);
+        msg.save();
+    }
+
+    /**
+     * @description: 周围范围查询函数，查询是否有点已经录入了
+     * @author: lyj
+     * @create: 2019/09/29
+     **/
+    public boolean isRepeatPoint(){
+        int Latitude_point=String.valueOf(MainActivity.Latitude).indexOf(".");
+        int longitude_point=String.valueOf(MainActivity.Longitude).indexOf(".");
+        Log.i(TAG, String.valueOf(MainActivity.Latitude-MainActivity.interval).substring(0,Latitude_point+7)+":"+String.valueOf(MainActivity.Latitude+MainActivity.interval).substring(0,Latitude_point+7)+":"+String.valueOf(MainActivity.Longitude-MainActivity.interval).substring(0,longitude_point+7)+":"+String.valueOf(MainActivity.Longitude+MainActivity.interval).substring(0,longitude_point+7));
+        List<DataMsg> list=DataMsg.find(DataMsg.class,"status = ? and latitude > ? and latitude < ? and longitude > ? and longitude < ?",
+                "1",String.valueOf(MainActivity.Latitude-MainActivity.interval).substring(0,Latitude_point+7),String.valueOf(MainActivity.Latitude+MainActivity.interval).substring(0,Latitude_point+7),String.valueOf(MainActivity.Longitude-MainActivity.interval).substring(0,longitude_point+7),String.valueOf(MainActivity.Longitude+MainActivity.interval).substring(0,longitude_point+7));
+        Log.i(TAG,"---------"+String.valueOf(list==null)+String.valueOf(list.size()));
+        return list.size()!=0;
     }
 }

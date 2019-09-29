@@ -59,7 +59,7 @@ public class MonitorFragment extends Fragment {
 
     //用于Fragment和Activity通信的接口
     public interface StatusListener {
-        public void onStatus(int status);
+        public void onStatus(int status,String val);
     }
     /**
      * @description: 坐标
@@ -189,13 +189,13 @@ public class MonitorFragment extends Fragment {
 
         }
         add(list.get(0).getMesure_val());
-        int cnt = SetStatus(rsp_status);
+        int cnt = SetStatus(rsp_status,list);
         MainActivity.dataBaseModule.addData(MainActivity.EventID,getTime(),rsp_val[0],rsp_val[1],rsp_val[2],
                 rsp_val[3],BackPackStatus[cnt],MainActivity.Longitude,MainActivity.Latitude);
         mAdapter.notifyDataSetChanged();
     }
 
-    private int SetStatus(String[] rsp_status) {
+    private int SetStatus(String[] rsp_status,List<MonitorItem> list) {
         /**
          * 以数值型代表探头状态，并判断背包状态
          * 0：禁用状态；1：正常；2：报警；3：严重报警；4：故障；
@@ -217,7 +217,7 @@ public class MonitorFragment extends Fragment {
             BackStatus = Math.max(BackStatus, status);
         }
         setButtonStatus(BackStatus);
-        mCallback.onStatus(BackStatus);
+        mCallback.onStatus(BackStatus,list.get(0).getMesure_val());
         return BackStatus;
     }
 
@@ -298,8 +298,24 @@ public class MonitorFragment extends Fragment {
      **/
     private void add(String val){
         if(longitude!=0.0&&latitude!=0.0){
-            DataMsg msg=new DataMsg(getTime(),val,longitude,latitude);
-            msg.save();
+            if(isRepeatPoint()){
+                DataMsg msg=new DataMsg(getTime(),val,longitude,latitude,0);
+                msg.save();
+            }
         }
     }
+
+    /**
+     * @description: 周围范围查询函数，查询是否有点已经录入了
+     * @author: lyj
+     * @create: 2019/09/29
+     **/
+    public boolean isRepeatPoint(){
+        int Latitude_point=String.valueOf(MainActivity.Latitude).indexOf(".");
+        int longitude_point=String.valueOf(MainActivity.Longitude).indexOf(".");
+        List<DataMsg> list=DataMsg.find(DataMsg.class,"status = ? and latitude > ? and latitude < ? and longitude > ? and longitude < ?",
+                "1",String.valueOf(MainActivity.Latitude-MainActivity.interval).substring(0,Latitude_point+7),String.valueOf(MainActivity.Latitude+MainActivity.interval).substring(0,Latitude_point+7),String.valueOf(MainActivity.Longitude-MainActivity.interval).substring(0,longitude_point+7),String.valueOf(MainActivity.Longitude+MainActivity.interval).substring(0,longitude_point+7));
+        return list.size()!=0;
+    }
+
 }

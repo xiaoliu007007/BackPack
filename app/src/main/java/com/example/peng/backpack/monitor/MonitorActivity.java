@@ -47,12 +47,12 @@ public class MonitorActivity extends AppCompatActivity
 
     /** 使用接口实现Fragment间通信，通信过程Fragment-Activity-Fragment*/
     @Override
-    public void onStatus(int status) {
+    public void onStatus(int status,String val) {
         //在activity中查找fragment，并调用Fragment函数
         TraceFragment traceFragment =
                 (TraceFragment)getSupportFragmentManager().findFragmentById(R.id.left);
         if(traceFragment != null) {
-            traceFragment.setColorStatus(status);
+            traceFragment.setColorStatus(status,val);
         }else {
 
         }
@@ -66,4 +66,5 @@ public class MonitorActivity extends AppCompatActivity
             monitorFragment.setLocation(latitude,longitude);
         }
     }
+
 }

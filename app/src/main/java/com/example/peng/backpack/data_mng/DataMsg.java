@@ -14,16 +14,18 @@ public class DataMsg extends SugarRecord {
     String value;
     double longitude;
     double latitude;
+    int status;
 
     public DataMsg() {
 
     }
 
-    public DataMsg(String time, String value, double longitude, double latitude) {
+    public DataMsg(String time, String value, double longitude, double latitude, int status) {
         this.time = time;
         this.value = value;
         this.longitude = longitude;
         this.latitude = latitude;
+        this.status = status;
     }
 
     public String getTime() {
@@ -58,8 +60,22 @@ public class DataMsg extends SugarRecord {
         this.latitude = latitude;
     }
 
+    public int getStatus() {
+        return status;
+    }
+
+    public void setStatus(int status) {
+        this.status = status;
+    }
+
     @Override
     public String toString() {
-        return  time+'#'+value+'#'+longitude+'#'+latitude;
+        return "DataMsg{" +
+                "time='" + time + '\'' +
+                ", value='" + value + '\'' +
+                ", longitude=" + longitude +
+                ", latitude=" + latitude +
+                ", status=" + status +
+                '}';
     }
 }
