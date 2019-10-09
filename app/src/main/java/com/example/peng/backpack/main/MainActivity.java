@@ -56,7 +56,7 @@ public class MainActivity extends Activity {
     public static double[][] directions={{0,0.0001},{0.00005,0.00005},{0.0001,0},{0.00005,-0.00005},{0,-0.0001},{-0.00005,-0.00005},{-0.0001,0},{-0.00005,0.00005}};
     public static double Start_Latitude=39.970811;
     public static double Start_Longitude=116.362888;
-    public static boolean testFlag=true;//是否开启测试
+    public static boolean testFlag=false;//是否开启测试
     public static int maxValue=36000;//人体承受最大辐射值
     public static String IP= "http://10.28.222.103:8000/";//服务器IP地址以及端口
     public static double interval=0.0001001;//范围内历史轨迹点的间隔数
