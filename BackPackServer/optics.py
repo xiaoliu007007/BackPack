@@ -1,17 +1,13 @@
-"""
-@description: DBSCAN算法
-@author: lyj
-@create: 2019/09/03
-"""
+from sklearn.cluster import OPTICS
 import numpy as np
 import matplotlib.pyplot as plt
 from sklearn import datasets
-from sklearn.cluster import DBSCAN
 
-class Solution():
+class optics:
     x1=[]
     x2=[]
-    ans=[]
+    #误差设计
+    interval=370;
     def getCircle(self,p1, p2, p3):
         circle=[]
         x21 = p2[0] - p1[0]
@@ -29,22 +25,21 @@ class Solution():
         circle.append(y0)
         return circle
 
-    def dbscan(self,num):
+    def optics(self,num):
         num.sort(key=lambda k:k[2],reverse=False)
+        #print(num)
         res=[]
-        interval=370; #误差
         for i in range(len(num)):
             for j in range(i+1,len(num)):
-                if num[j][2]-num[i][2]>interval:
+                if num[j][2]-num[i][2]>self.interval:
                     break
                 for n in range(j+1,len(num)):
-                    if num[n][2]-num[i][2]>interval:
+                    if num[n][2]-num[i][2]>self.interval:
                         break
                     ans=self.getCircle(num[i],num[j],num[n])
                     if ans:
                         self.x1.append(ans[0])
                         self.x2.append(ans[1])
-
 
         x_=np.array(self.x1)
         x_.reshape(-1,1)
@@ -53,21 +48,19 @@ class Solution():
 
         xn=np.array([x_,y_])
         Xn=np.transpose(xn)
-        dataLen = len(Xn)
-
-        minNum=len(num)//5
-        y_pred = DBSCAN(eps = 0.00001, min_samples = minNum).fit_predict(Xn)
+        minNum=len(num)//6
+        clust = OPTICS(min_samples=minNum)
+        y_pred=clust.fit_predict(Xn)
 
         y_pred = y_pred.tolist()
-
         X=[]
         Y = []
-        num = 0
+        count = 0
         for i in y_pred:
             if(i == 0):
-                X.append(Xn[num][0])
-                Y.append(Xn[num][1])
-            num = num + 1
+                X.append(Xn[count][0])
+                Y.append(Xn[count][1])
+            count = count + 1
 
         x_sum = 0
         y_sum = 0
@@ -75,7 +68,6 @@ class Solution():
             x_sum = x_sum + i
         for j in Y:
             y_sum = y_sum + j
-
-        self.ans.append(x_sum/len(X))
-        self.ans.append(y_sum/len(Y))
-        return self.ans
+        res.append(x_sum/len(X))
+        res.append(y_sum/len(Y))
+        return res
