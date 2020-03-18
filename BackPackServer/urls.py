@@ -17,6 +17,12 @@ from django.conf.urls import url
 from BackPackServer import view
 
 urlpatterns = [
-    url(r'^hello/$',view.hello),
+    url(r'^hello$',view.hello),
     url(r'^getMsg/$',view.getMsg),
+    url(r'^getData$',view.getData),
+    url(r'^insertData$',view.insertData),
+    url(r'^updateData$',view.updateData),
+    url(r'^deleteData$',view.deleteData),
+    url(r'^getType$',view.getType),
+    url(r'^login$',view.login),
 ]

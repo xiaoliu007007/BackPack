@@ -14,3 +14,12 @@ class BackPack(models.Model):
     longitude=models.FloatField()
     latitude=models.FloatField()
     alarm_status=models.CharField(max_length=10)
+    type=models.CharField(max_length=10)
+
+class BackPackType(models.Model):
+    type=models.CharField(max_length=10)
+    count=models.IntegerField()
+
+class User(models.Model):
+    name=models.CharField(max_length=10)
+    password=models.CharField(max_length=10)

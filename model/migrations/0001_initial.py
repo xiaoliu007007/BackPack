@@ -25,6 +25,7 @@ class Migration(migrations.Migration):
                 ('longitude', models.FloatField()),
                 ('latitude', models.FloatField()),
                 ('alarm_status', models.CharField(max_length=10)),
+                ('type', models.CharField(max_length=10)),
             ],
         ),
     ]
