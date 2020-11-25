@@ -19,6 +19,54 @@ def hello(request):
     return render(request, 'hello.html', context)
 
 
+def draw(request):
+    ans = {}
+    lists = []
+    if request.POST.get("type") == "2019-12-25":
+        list1 = {"lng":116.364291, "lat":39.969988}
+        list2 = {"lng":116.3642, "lat":39.969986}
+        list3 = {"lng":116.36422, "lat":39.96992}
+        lists.append(list1)
+        lists.append(list2)
+        lists.append(list3)
+        ans["end"]={"lng":116.3641,"lat":39.9691}
+    else :
+        lists.append({"lng":116.427151, "lat":39.97326})
+        lists.append({"lng":116.42715, "lat":39.97326})
+        lists.append({"lng":116.427172, "lat":39.973261})
+        lists.append({"lng":116.427189, "lat":39.973263})
+        lists.append({"lng":116.427219, "lat":39.973258})
+        lists.append({"lng":116.427226, "lat":39.973253})
+        lists.append({"lng":116.427274, "lat":39.973213})
+        lists.append({"lng":116.427277, "lat":39.973195})
+        lists.append({"lng":116.427263, "lat":39.973156})
+        lists.append({"lng":116.427236, "lat":39.97312})
+        lists.append({"lng":116.427228, "lat":39.973118})
+        lists.append({"lng":116.427218, "lat":39.973107})
+        lists.append({"lng":116.427214, "lat":39.973098})
+        lists.append({"lng":116.427184, "lat":39.973103})
+        lists.append({"lng":116.427173, "lat":39.973116})
+        lists.append({"lng":116.42717, "lat":39.973122})
+        lists.append({"lng":116.427169, "lat":39.973141})
+        lists.append({"lng":116.427174, "lat":39.973153})
+        lists.append({"lng":116.427182, "lat":39.973166})
+        lists.append({"lng":116.427188, "lat":39.973172})
+        lists.append({"lng":116.427201, "lat":39.973183})
+        lists.append({"lng":116.427209, "lat":39.973196})
+        lists.append({"lng":116.427228, "lat":39.973208})
+        lists.append({"lng":116.427238, "lat":39.973212})
+
+
+
+        ans["end"]={"lng":116.427213,"lat":39.973171}
+
+    data = {}
+    data["list"] = lists
+    data["total"] = len(lists)
+    ans["data"] = data
+    return HttpResponse(json.dumps(ans),status=200,content_type='application/json; charset=utf-8')
+
+
 def deleteData(request):
     id=request.POST.get("id")
     models.BackPack.objects.filter(id=id).delete()
@@ -102,7 +150,7 @@ def getData(request):
     cur.execute(SQL_count)
     ans["totalRow"]= cur.fetchone()[0]
 
-    print(ans)
+    #print(ans)
     return HttpResponse(json.dumps(ans,cls=DateEncoder),status=200,content_type='application/json; charset=utf-8')
 
 def getType(request):

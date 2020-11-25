@@ -15,6 +15,7 @@ Including another URLconf
 """
 from django.conf.urls import url
 from BackPackServer import view
+from BackPackServer import UploadForm
 
 urlpatterns = [
     url(r'^hello$',view.hello),
@@ -25,4 +26,7 @@ urlpatterns = [
     url(r'^deleteData$',view.deleteData),
     url(r'^getType$',view.getType),
     url(r'^login$',view.login),
+    url(r'^draw',view.draw),
+    url(r'^upload',UploadForm.upload),
+    url(r'^download',UploadForm.download),
 ]
